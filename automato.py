@@ -97,14 +97,50 @@ class Automato:
                 state_now = self.execution_transitions(state_now, symbol)
 
             if(state_now in self.statesLast):
-                 print(" A string foi aceita. ")
+                 print("A string foi aceita.")
                  os.system("copy .\\img\\accepted.png .\\temp")
                  return True
             else:
-                 print(" A string foi negada. ")
+                 print("A string foi negada.")
                  os.system("copy .\\img\\rejected.png .\\temp")
                  return False
-
         else:
-            print(" Automato não possui estado inicial!! ")
+            print(" Automato não possui estado inicial!!")
 
+    def toCreateFork(self, stateNow, symbol):
+        txt = "Palavra para teste: "+ self.completeWord + "\n Lendo " + symbol
+        self.missingToRead.remove(symbol)
+        self.alreadyRead.append(symbol)
+        txt += "Falta: " + ''.join(self.missingToRead)
+        graph = pydot.Dot('my_graph', graph_type='digraph', bgcolor='write', label=str(txt))
+
+        for n in self.states:
+            if n in self.stateFirst:
+                my_node = pydot.Node(n, label=n, shape="invtriangle")
+            elif n in self.statesLast:
+                my_node = pydot.Node(n, label=n, shape="doublecircle")
+            else:
+                my_node = pydot.Node(n, label=n, shape="circle")
+            for entry in self.transitions[n]:
+                if n == stateNow and entry == symbol:
+                    if n in self.stateFirst:
+                        my_node = pydot.Node(n, label=n, shape="invtriangle", color="green")
+                    elif n in self.statesLast:
+                        my_node = pydot.Node(n, label=n, shape="doublecircle", color="green")
+                    else:
+                        my_node = pydot.Node(n, label=n, shape="circle", color="green")
+                    config = pydot.Edge(n, self.transitions[n][entry], color='red',
+                                            label=" "+entry, arrowhead='vee')
+                else:
+                    config = pydot.Edge(n, self.transitions[n][entry], color='black',
+                                        label=" "+entry, arrowhead='vee')
+                graph.add_edge(config)
+            graph.add_node(my_node)
+
+        graph.write_png(".\\temp\\"+str(''.join(self.alreadyRead))+".png")
+        self.count =+ 1
+
+    def toCreateGif(self):
+        try:
+            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.png -resize 420x420 img.gif")
+            os.startfile("img.gif")
