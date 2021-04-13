@@ -77,9 +77,20 @@ def read_File(automato):
     print(" Transições: ", transitions)
     print(" Alfabeto: ", alphabet)
 
+    automato.set_alphabet(alphabet)
+    automato.set_states(states)
+    automato.set_stateFirst(stateFirst)
+    automato.set_statesLast(stateLast)
+    automato.set_transitions(transitions)
+    automato.set_string(word)
+    automato.toCreateGif()
 
+def main():
+    fnd = Automato()
+    read_File(fnd)
 
-
+if __name__ == '__main__':
+    main()
 
 
 
