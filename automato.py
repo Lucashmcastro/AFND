@@ -98,13 +98,13 @@ class Automato:
 
             if(state_now in self.statesLast):
                  print(" A string foi aceita. ")
-                 os.system("copy .\\img\\accepted.jpg .\\temp")
+                 os.system("copy .\\img\\accepted.png .\\temp")
                  return True
             else:
                  print(" A string foi negada. ")
-                 os.system("copy .\\img\\rejected.jpg .\\temp")
+                 os.system("copy .\\img\\rejected.png .\\temp")
                  return False
 
         else:
-            print(" Automato não possui estados iniciais!! ")
+            print(" Automato não possui estado inicial!! ")
 
