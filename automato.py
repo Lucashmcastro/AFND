@@ -138,9 +138,15 @@ class Automato:
             graph.add_node(my_node)
 
         graph.write_png(".\\temp\\"+str(''.join(self.alreadyRead))+".png")
-        self.count =+ 1
+        self.count += 1
 
     def toCreateGif(self):
         try:
             os.system("magick convert -delay 120 -loop 0 .\\temp\\*.png -resize 420x420 img.gif")
             os.startfile("img.gif")
+            pathCurrent = dir_path+"\\temp\\"
+            dir = os.listdir(pathCurrent)
+            for file in dir:
+                os.remove(pathCurrent+"\\"+file)
+        except:
+            print("Inválido, ocorreu um erro na criação do Git.")
