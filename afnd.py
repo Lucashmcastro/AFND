@@ -1,333 +1,330 @@
 import pydot
 import os
-
 os.environ["PATH"] += os.pathsep + "C:\Program Files\Graphviz\bin"
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-class estado:
+class state:
     def __init__(self):
         self.name = None
-        self.proxEstado = None
-        self.anteriorEstado = None
+        self.nextState = None
+        self.previousState = None
 
-    def get_proxEstado(self):
-        return self.proxEstado
+    def get_nextState(self):
+        return self.nextState
 
-    def set_proxEstado(self, prox):
-        self.proxEstado = prox
+    def set_nextState(self, next):
+        self.nextState = next
 
-    def get_anteriorEstado(self):
-        return self.anteriorEstado
+    def get_previousState(self):
+        return self.previousState
 
-    def set_anteriorEstado(self, anterior):
-        self.anteriorEstado = anterior
-
+    def set_previousState(self, previous):
+        self.previousState = previous
 
 class Automato:
     def __init__(self):
-        self.alfabeto = []
-        self.transicoes = {}
-        self.estados = []
-        self.estadoInicial = None
-        self.estadosFinais = []
-        self.primeiro_estado = None
-        self.ultimo_estado = None
-        self.quantidade_estados = 0
+        self.alphabet = []
+        self.transitions = {}
+        self.states = []
+        self.stateFirst = None
+        self.statesLast = []
+        self.first_state = None
+        self.last_state = None
+        self.amount_states = 0
 
         self.count = 0
-        self.faltaLer = []
-        self.jaLeu = []
-        self.palavraCompleta = ''
+        self.missingToRead = []
+        self.alreadyRead = []
+        self.completeWord = ''
 
-    def verificar_repetidos(self, dados):
-        vetor = []
-        for i in dados:
-            if (i not in vetor):
-                vetor.append(i)
-        return vetor
+    def check_repeated(self, data):
+        vector = []
+        for i in data:
+            if (i not in vector):
+                vector.append(i)
+        return vector
 
-    def set_alfabeto(self, alfabeto):
-        self.alfabeto = self.verificar_repetidos(alfabeto)
+    def set_alphabet(self, alphabet):
+        self.alphabet = self.check_repeated(alphabet)
 
-    def set_estados(self, estados):
-        self.estados = self.verificar_repetidos(estados)
-        self.estados.sort()
-        self.alfabeto.append("lambda")
+    def set_states(self, states):
+        self.states = self.check_repeated(states)
+        self.states.sort()
+        self.alphabet.append("lambda")
 
-    def set_estadoInicial(self, estado):
-        if estado in self.estados:
-            self.estadoInicial = estado
+    def set_stateFirst(self, state):
+        if state in self.states:
+            self.stateFirst = state
         else:
-            print("Estado inicial invalido")
+            print(" Estado Inicial inválido. Verifique!! ")
 
-    def set_estadosFinais(self, estados):
-        estados = self.verificar_repetidos(estados)
-        for i in estados:
-            if i in self.estados:
-                if i not in self.estadosFinais:
-                    self.estadosFinais.append(i)
+    def set_statesLast(self, states):
+        states = self.check_repeated(states)
+        for i in states:
+            if i in self.states:
+                if i not in self.statesLast:
+                    self.statesLast.append(i)
 
-    def verificar_transicoes(self, transicoes):
-        estados_transições = []
-        for estado in transicoes:
-            check_estados = [];
-            estados_transições.append(estado)
-            if (estado not in check_estados and estado in self.estados):
-                check_estados.append(estado);
-                check_alfabeto = []
-                for entrada in transicoes[estado]:
-                    check_alfabeto.append(entrada)
-                    if (entrada in self.alfabeto):
-                        for i in transicoes[estado][entrada]:
-                            if (i not in self.estados):
-                                return False
+    def check_transitions(self, transitions):
+        states_transitions = []
+
+        for state in transitions:
+            confer_states = []; states_transitions.append(state)
+            if (state not in confer_states and state in self.states):
+                confer_states.append(state); confer_alphabet = []
+                for entry in transitions[state]:
+                    confer_alphabet.append(entry)
+                    if (entry in self.alphabet):
+                        for i in transitions[state][entry]:
+                            if (i not in self.states):
+                               return False
                     else:
                         return False
-                check_alfabeto.sort()
-                if (check_alfabeto != self.alfabeto):
+                confer_alphabet.sort()
+                if (confer_alphabet != self.alphabet):
                     return False
             else:
                 return False
 
-        estados_transições.sort()
-        if (estados_transições != self.estados):
+        states_transitions.sort()
+        if (states_transitions != self.states):
             return False
         return True
 
-    def set_transicoes(self, transicoes):
-        if (self.verificar_transicoes(transicoes) == True):
-            self.transicoes = transicoes
+    def set_transitions(self, transitions):
+        if (self.check_transitions(transitions) == True):
+            self.transitions = transitions
         else:
-            print("Funções de transições fora do Padrao de um AFND")
+            print(" Verifique os padrões de uma AFD. Funções de transições inválidas!! ")
 
-    def laco_transicoes(self, simbolo):
-        estado = self.primeiro_estado
-        aux_inicio = None
-        aux_fim = None
-        while estado.get_proxEstado() != None:
-            self.criaGrafo(estado, simbolo, "red")
-            aux1, aux2 = self.aplicacao_transicoes(simbolo, estado)
-            if ((aux_inicio and aux_inicio) == None):
-                aux_inicio = aux1
-                aux_fim = aux2
+    def transition_loop(self, symbol):
+        state = self.first_state
+        aux_first = None
+        aux_end = None
+
+        while state.get_nextState() != None:
+            self.toCreateFork(state, symbol, "red")
+            aux1, aux2 = self.execution_transitions(symbol, state)
+            if ((aux_first and aux_first) == None):
+                aux_first = aux1
+                aux_end = aux2
             else:
-                aux_fim.set_proxEstado(aux1)
+                aux_end.set_nextState(aux1)
                 if aux1 != None:
-                    aux1.set_anteriorEstado(aux_fim)
-                    aux_fim = aux2
-            estado = estado.get_proxEstado()
-            if (estado == None):
+                    aux1.set_previousState(aux_end)
+                    aux_end = aux2
+            state = state.get_nextState()
+            if(state == None):
                 break
-
         else:
-
-            self.criaGrafo(estado, simbolo, "green")
-            aux1, aux2 = self.aplicacao_transicoes(simbolo, estado)
-            if ((aux1 and aux2) != None):
-                if ((aux_inicio and aux_fim) == None):
-                    aux_inicio = aux1
-                    aux_fim = aux2
+            self.toCreateFork(state, symbol, "green")
+            aux1, aux2 = self.execution_transitions(symbol, state)
+            if((aux1 and aux2) != None):
+                if((aux_first and aux_end) == None):
+                    aux_first = aux1
+                    aux_end = aux2
                 else:
-                    aux_fim.set_proxEstado(aux1)
-                    aux1.set_anteriorEstado(aux_fim)
-                    aux_fim = aux2
+                    aux_end.set_nextState(aux1)
+                    aux1.set_previousState(aux_end)
+                    aux_end = aux2
 
-        if ((aux_inicio and aux_fim) != None):
-            estado.set_proxEstado(aux_inicio)
-            aux_inicio.set_anteriorEstado(estado)
-            self.ultimo_estado = aux_fim
+        if((aux_first and aux_end) != None):
+            state.set_nextState(aux_first)
+            aux_first.set_previousState(state)
+            self.last_state = aux_end
 
-    def organicacao_lambda(self, estado, inicio_fila, fim_fila):
-        if ((inicio_fila and fim_fila) == None):
-            inicio_fila = estado
-            fim_fila = estado
+
+
+    def lambda_def(self, state, start_row, end_row):
+        if ((start_row and end_row) == None):
+            start_row = state
+            end_row = state
         else:
-            fim_fila.set_proxEstado(estado)
-            estado.set_anteriorEstado(fim_fila)
-            estado.set_anteriorEstado(fim_fila)
-            fim_fila = estado
-        return inicio_fila, fim_fila
+            end_row.set_nextState(state)
+            state.set_previousState(end_row)
+            end_row = state
+        return start_row, end_row
 
-    def transicao_lambda(self, estado_atual):
-        inicio_fila = None
-        fim_fila = None
-        controle = False
-        for i in range(len(self.transicoes[estado_atual]["lambda"])):
-            novoEstado = estado()
-            novoEstado.name = self.transicoes[estado_atual]["lambda"][i]
-            if (i == len(self.transicoes[estado_atual]["lambda"])):
-                controle = True
-            while (self.transicoes[novoEstado.name]["lambda"] != []):
-                guarda_estado = novoEstado.name
-                for j in range(len(self.transicoes[novoEstado.name]["lambda"])):
+    def lambda_transition(self, state_now):
+        start_row = None
+        end_row = None
+        control = False
+        for i in range(len(self.transitions[state_now]["Lambda"])):
+            newState = state()
+            newState.name = self.transitions[state_now]["Lambda"][i]
+            if (i == len(self.transitions[state_now]["Lambda"])):
+                control = True
+            while (self.transitions[newState.name]["Lambda"] != []):
+                state_guard = newState.name
+                for j in range(len(self.transitions[newState.name]["Lambda"])):
                     if (j > 0):
-                        newEstado = estado()
-                        newEstado.name = self.transicoes[guarda_estado]["lambda"][j]
-                        inicio_fila, fim_fila = self.organicacao_lambda(newEstado, inicio_fila, fim_fila)
+                        state_new = state()
+                        state_new.name = self.transitions[state_guard]["Lambda"][j]
+                        start_row, end_row = self.lambda_def(state_new, start_row, end_row)
                     else:
-                        novoEstado.name = self.transicoes[novoEstado.name]["lambda"][j]
-                        # print(novoEstado.name)
-                        inicio_fila, fim_fila = self.organicacao_lambda(novoEstado, inicio_fila, fim_fila)
-                    self.quantidade_estados += 1
+                        newState.name = self.transitions[newState.name]["Lambda"][j]
+                        start_row, end_row = self.lambda_def(newState, start_row, end_row)
+                    self.amount_states += 1
             else:
-                if (controle == False):
-                    inicio_fila, fim_fila = self.organicacao_lambda(novoEstado, inicio_fila, fim_fila)
-                    self.quantidade_estados += 1
-        return inicio_fila, fim_fila
+                if (control == False):
+                    start_row, end_row = self.lambda_def(newState, start_row, end_row)
+                    self.amount_states += 1
+        return start_row, end_row
 
-    def aplicacao_transicoes(self, simbolo, estado_atual):
-        aux_inicio = None
-        aux_fim = None
-        estados = estado_atual.name
+    def execution_transitions(self, symbol, state_now):
+        aux_first = None
+        aux_end = None
+        states = state_now.name
 
-        for i in range(len(self.transicoes[estados][simbolo])):
+        for i in range(len(self.transitions[states][symbol])):
             if (i == 0):
-                estado_atual.name = self.transicoes[estados][simbolo][i]
-                inicio_lambda, fim_lambda = self.transicao_lambda(estado_atual.name)
-                if ((aux_inicio and aux_fim) == None):
-                    aux_inicio = inicio_lambda
-                    aux_fim = fim_lambda
+                state_now.name = self.transitions[states][symbol][i]
+                lambda_first, lambda_end = self.lambda_transition(state_now.name)
+                if ((aux_first and aux_end) == None):
+                    aux_first = lambda_first
+                    aux_end = lambda_end
                 else:
-                    print(inicio_lambda.name, fim_lambda.name)
-                    aux_fim.set_proxEstado(inicio_lambda)
-                    inicio_lambda.set_anteriorEstado(aux_fim)
-                    aux_fim = fim_lambda
+                    print(lambda_first.name, lambda_end.name)
+                    aux_end.set_nextState(lambda_first)
+                    lambda_first.set_previousState(aux_end)
+                    aux_end = lambda_end
             else:
-                novoEstado = estado()
-                novoEstado.name = self.transicoes[estados][simbolo][i]
-                inicio_lambda, fim_lambda = self.transicao_lambda(novoEstado.name)
-                if ((aux_inicio and aux_fim) == None):
-                    aux_inicio = novoEstado
-                    aux_fim = novoEstado
+                newState = state()
+                newState.name = self.transitions[states][symbol][i]
+                lambda_first, lambda_end = self.lambda_transition(newState.name)
+                if ((aux_first and aux_end) == None):
+                    aux_first = newState
+                    aux_end = newState
                 else:
-                    aux_fim.set_proxEstado(novoEstado)
-                    novoEstado.set_anteriorEstado(aux_fim)
-                    aux_fim = novoEstado
-                if ((inicio_lambda and fim_lambda) != None):
-                    aux_fim.set_proxEstado(inicio_lambda)
-                    inicio_lambda.set_anteriorEstado(aux_fim)
-                    aux_fim = fim_lambda
+                    aux_end.set_nextState(newState)
+                    newState.set_previousState(aux_end)
+                    aux_end = newState
+                if ((lambda_first and lambda_end) != None):
+                    aux_end.set_nextState(lambda_first)
+                    lambda_first.set_previousState(aux_end)
+                    aux_end = lambda_end
 
-                self.quantidade_estados += 1
-        if (len(self.transicoes[estados][simbolo]) == 0):
-            self.entrada_sem_saida(estado_atual)
-        return aux_inicio, aux_fim
+                self.amount_states += 1
+        if (len(self.transitions[states][symbol]) == 0):
+            self.without_exit(state_now)
+        return aux_first, aux_end
 
-    def entrada_sem_saida(self, estado):
-        if (estado == self.primeiro_estado):
-            self.primeiro_estado = self.primeiro_estado.get_proxEstado()
-        elif (estado == self.ultimo_estado):
-            self.ultimo_estado = self.ultimo_estado.get_anteriorEstado()
-            self.ultimo_estado.set_proxEstado(None)
+    def without_exit(self, state):
+        if(state == self.first_state):
+            self.first_state = self.first_state.get_nextState()
+        elif(state == self.last_state):
+            self.last_state = self.last_state.get_previousState()
+            self.last_state.set_nextState(None)
         else:
-            estado1 = estado.get_anteriorEstado()
-            estado2 = estado.get_proxEstado()
-            estado1.set_proxEstado(estado2)
-            estado2.set_anteriorEstado(estado1)
-        self.quantidade_estados += -1
+            state1 = state.get_previousState()
+            state2 = state.get_nextState()
+            state1.set_nextState(state2)
+            state2.set_previousState(state1)
+        self.amount_states += -1
 
     def set_string(self, string):
-        self.faltaLer.extend(string)
-        self.palavraCompleta = string
+        self.missingToRead.extend(string)
+        self.completeWord=string
 
-        for simbolo in list(set(string)):
-            if (simbolo not in self.alfabeto):
-                print("'" + simbolo + "' nao faz parte do alfabeto. ")
+        for symbol in list(set(string)):
+            if(symbol not in self.alphabet):
+                print("'" +symbol+ "' não faz parte do alfabeto. ")
                 return
 
-        if (self.quantidade_estados == 0):
-            if (self.estadoInicial == None):
-                print(" Automato não possui estado inicial. ")
+        if(self.amount_states == 0):
+             if(self.stateFirst == None):
+                print(" Automato não possui estado inicial!! ")
                 return
-            novoEstado = estado()
-            novoEstado.name = self.estadoInicial
-            self.primeiro_estado = novoEstado
-            self.ultimo_estado = novoEstado
-            self.quantidade_estados += 1
 
-        for simbolo in string:
-            self.laco_transicoes(simbolo)
-        estado_atual = self.primeiro_estado
+            newState = state()
+            newState.name = self.stateFirst
+            self.first_state = newState
+            self.last_state = newState
+            self.amount_states += 1
 
-        if (estado_atual != None):
-            while (estado_atual.get_proxEstado() != None):
-                if (self.verificacao_automato(estado_atual.name) == True):
+        for symbol in string:
+            self.transition_loop(symbol)
+        state_now = self.first_state
+
+        if (state_now != None):
+            while (state_now.get_nextState() != None):
+                if (self.check_automato(state_now.name) == True):
                     self.end()
                     return True
-                estado_atual = estado_atual.get_proxEstado()
+                state_now = state_now.get_nextState()
             else:
-                if (self.verificacao_automato(estado_atual.name) == True):
+                if (self.check_automato(state_now.name) == True):
                     self.end()
                     return True
                 else:
-                    print("String Recusada")
-                    os.system("copy .\\image\\zrejeitada.jpg .\\temp")
+                    print("A string foi negada.")
+                    os.system("copy .\\img\\rejected.png .\\temp")
                     self.end()
                     return False
         else:
-            print("String Recusada")
-            os.system("copy .\\image\\zrejeitada.jpg .\\temp")
+            print("A string foi negada.")
+            os.system("copy .\\img\\rejected.png .\\temp")
             self.end()
             return False
 
-    def verificacao_automato(self, estado):
-        if (estado in self.estadosFinais):
-            print("String Aceita")
-            os.system("copy .\\image\\zaceita.png .\\temp")
+    def check_automato(self, state):
+        if (state in self.statesLast):
+            print("A string foi aceita")
+            os.system("copy .\\img\\accepted.png .\\temp")
             return True
 
     def end(self):
-        self.primeiro_estado = None
-        self.ultimo_estado = None
-        self.quantidade_estados = 0
+        self.first_state = None
+        self.last_state = None
+        self.amount_states = 0
 
-    def criaGrafo(self, estadoAtual, simbolo, cor):
-        if (simbolo == "lambda"):
-            simbolo = u'\u03BB'
-        txt = "Palavra a testar: " + self.palavraCompleta + "\n lendo " + simbolo
-        self.jaLeu.append(simbolo)
+    def toCreateFork(self, stateCurrent , symbol, color):
+        if (symbol == "Lambda"):
+            symbol = u'\u03BB'
+        txt = "Palavra a testar: " + self.completeWord + "\n lendo " + symbol
+        self.alreadyRead.append(symbol)
         graph = pydot.Dot('my_graph', graph_type='digraph', bgcolor='white', label=str(txt))
 
-        for n in self.estados:
-            if n in self.estadoInicial:
+        for n in self.states:
+            if n in self.stateFirst:
                 my_node = pydot.Node(n, label=n, shape="invtriangle")
-            elif n in self.estadosFinais:
+            elif n in self.statesLast:
                 my_node = pydot.Node(n, label=n, shape="doublecircle")
             else:
                 my_node = pydot.Node(n, label=n, shape="circle")
-            for entrada in self.transicoes[n]:
-                if entrada == "episilon":
-                    entrada = u'\u03BB'
-                if n == estadoAtual.name and entrada == simbolo:
-                    if n in self.estadoInicial:
-                        my_node = pydot.Node(n, label=n, shape="invtriangle", color=cor)
-                    elif n in self.estadosFinais:
-                        my_node = pydot.Node(n, label=n, shape="doublecircle", color=cor)
+            for entry in self.transitions[n]:
+                if entry == "episilon":
+                    entry = u'\u03BB'
+                if n == stateCurrent.name and entry == symbol:
+                    if n in self.stateFirst:
+                        my_node = pydot.Node(n, label=n, shape="invtriangle", color=color)
+                    elif n in self.statesLast:
+                        my_node = pydot.Node(n, label=n, shape="doublecircle", color=color)
                     else:
-                        my_node = pydot.Node(n, label=n, shape="circle", color=cor)
-                    for x in self.transicoes[n][entrada]:
-                        config = pydot.Edge(n, x, color=cor, label=" " + entrada, arrowhead='vee')
+                        my_node = pydot.Node(n, label=n, shape="circle", color=color)
+                    for x in self.transitions[n][entry]:
+                        config = pydot.Edge(n, x, color=color, label=" " + entry, arrowhead='vee')
                         graph.add_edge(config)
 
                 else:
 
-                    for x in self.transicoes[n][entrada]:
-                        config = pydot.Edge(n, x, color='black', label=" " + entrada, arrowhead='vee')
+                    for x in self.transitions[n][entry]:
+                        config = pydot.Edge(n, x, color='black', label=" " + entry, arrowhead='vee')
                         graph.add_edge(config)
 
             graph.add_node(my_node)
-            tempfile = "./temp/" + str(cor) + str(''.join(self.jaLeu)) + ".jpg"
+            tempfile = "./temp/" + str(color) + str(''.join(self.alreadyRead)) + ".png"
         graph.write(tempfile)
         self.count += 1
 
-    def criaGif(self):
+    def toCreateGif(self):
         try:
             print(dir_path)
-            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 400x400 imagem.gif")
-            os.startfile("imagem.gif")
+            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.png -resize 420x420 img.gif")
+            os.startfile("img.gif")
             pathAtual = dir_path + "\\temp\\"
             dir = os.listdir(pathAtual)
             for file in dir:
-                os.remove(pathAtual + "\\" + file)  # deleta o file da pasta temp
+                os.remove(pathAtual + "\\" + file)
         except:
-                print("Inválido. Favor verificar a pasta temp.")
+                print("Inválido, ocorreu um erro na criação do Gif.")
