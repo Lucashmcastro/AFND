@@ -1,17 +1,17 @@
 from afnd import Automato
 
-def read_File(automato):
 
+def readFile(automato):
     f = open("./file.txt", "r")
     text = []
     lines = f.read().splitlines()
 
     for x in lines:
-        text.apped(x.split(" "))
+        text.append(x.split(" "))
     print(text)
 
     firstLine = text[0]
-    lastLine = text[len(text) - 1]
+    lastLine = text[len(text)-1]
     text.remove(lastLine)
     text.remove(firstLine)
 
@@ -19,9 +19,8 @@ def read_File(automato):
     print("Última Linha: ", lastLine)
     print("Texto: ", text)
 
-    stateFirst = []
-    stateLast = []
-    transitions = []
+    stateLast = [] 
+    transitions = {}
     alphabet = []
     word = []
     states = []
@@ -29,48 +28,44 @@ def read_File(automato):
     separator = firstLine.index(";")
 
     for x in firstLine:
-        if(firstLine.index(x) < separator):
+        if(firstLine.index(x)<separator):
             stateFirst=x
-        if(firstLine.index(x) > separator):
+        if(firstLine.index(x)>separator):
             stateLast.append(x)
 
     word = lastLine[len(lastLine) - 1]
-
     print("Estado Inicial: ", stateFirst)
     print("Estado Final: ", stateLast)
     print("Palavra: ", word)
 
     for x in text:
-        list = []
-        entrys = {}
+        list = []        
+        dicEntrys = {}
 
-        if x[1] == "/":
+        if x[1] == '/':
             x[1] = "lambda"
-
         if x[0] in transitions:
-            entrys = transitions[x[0]]
-            print(entrys)
+            dicEntry = transitions[x[0]] 
+            print(dicEntry)
             if x[1] in transitions[x[0]]:
-                list = transitions[x[0]][x[1]]
-                list.append(x[3])
-
-                entrys[x[1]] = list
-                transitions[x[0]] = dict[entrys]
-
-        else:
+                list = transitions[x[0]][x[1]]                
+            list.append(x[3])
+            
+            dicEntry[x[1]] = list
+            transitions[x[0]] = dict(dicEntry)
+        else:            
             list.append(x[3])
             if x[1] == 'lambda':
-                entrys['lamba'] = [x[3]]
-                transitions[x[0]] = dict(entrys)
-
+                dicEntrys['lambda'] = [x[3]]                 
+                transitions[x[0]] = dict(dicEntrys)
             else:
-                entrys[x[1]] = list
-                entrys['lambda'] = []
-                transitions[x[0]] = dict(entrys)
+                dicEntrys[x[1]] = list
+                dicEntrys['lambda'] = [] 
+                transitions[x[0]] = dict(dicEntrys)
 
         if x[0] not in states:
             states.append(x[0])
-        if x[1] not in alphabet and x[1] != "lambda":
+        if x[1] not in alphabet and x[1]!="lambda":
             alphabet.append(x[1])
 
     print("\n\n Estados: ", states)
@@ -87,11 +82,7 @@ def read_File(automato):
 
 def main():
     fnd = Automato()
-    read_File(fnd)
+    readFile(fnd)
 
 if __name__ == '__main__':
     main()
-
-
-
-
