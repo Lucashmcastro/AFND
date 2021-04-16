@@ -290,13 +290,13 @@ class Automato:
 
         for n in self.states:
             if n in self.stateFirst:
-                my_node = pydot.Node(n, label=n, shape="invtriangle")
+                my_node = pydot.Node(n, label=n, shape="invtriangle", color="blue")
               
             elif n in self.statesLast:
-                my_node = pydot.Node(n, label=n, shape="doublecircle")
+                my_node = pydot.Node(n, label=n, shape="doublecircle", color="red")
             
             else:
-                my_node = pydot.Node(n, label=n, shape="circle")
+                my_node = pydot.Node(n, label=n, shape="circle", color="purple")
              
             for insertion in self.transitions[n]:
                 if insertion =="episilon":
@@ -304,23 +304,23 @@ class Automato:
 
                 if n == stateCurrent.name and insertion == symbol:
                     if n in self.stateFirst:
-                        my_node = pydot.Node(n, label=n, shape="invtriangle",color=color)
+                        my_node = pydot.Node(n, label=n, shape="invtriangle",color="green")
                      
                     elif n in self.statesLast:
-                        my_node = pydot.Node(n, label=n, shape="doublecircle", color=color)
+                        my_node = pydot.Node(n, label=n, shape="doublecircle", color="green")
                     
                     else:
-                        my_node = pydot.Node(n, label=n, shape="circle", color=color)
+                        my_node = pydot.Node(n, label=n, shape="circle", color="green")
                        
                     for x in self.transitions[n][insertion]:
-                        config = pydot.Edge(n, x,  color=color, label=" "+insertion, arrowhead='vee')
+                        config = pydot.Edge(n, x,  color=' ', label=" "+insertion, arrowhead='vee')
                         graph.add_edge(config)
                  
                 else:
                 
                     for x in self.transitions[n][insertion]:
                         
-                        config = pydot.Edge(n, x,  color='black', label=" "+insertion, arrowhead='vee')
+                        config = pydot.Edge(n, x,  color="white", label=" "+insertion, arrowhead='vee')
                         graph.add_edge(config)
                 
             graph.add_node(my_node)
