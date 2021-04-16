@@ -283,7 +283,7 @@ class Automato:
     def toCreateFork(self,stateCurrent,symbol,color):
         if(symbol=="lambda"):
             symbol = u'\u03BB'
-        txt = "Palavra para testar: "+ self.completeWord + "\n Lendo " + symbol
+        txt = "Palavra para testar: "+ self.completeWord + "\n Lendo: " + symbol
 
         self.alreadyRead.append(symbol)
         graph = pydot.Dot('my_graph', graph_type='digraph', bgcolor='white', label=str(txt))
