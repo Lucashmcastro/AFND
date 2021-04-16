@@ -105,7 +105,7 @@ class Automato:
             print(" Automato não possui estado inicial!!")
 
     def toCreateFork(self,stateNow,symbol):
-        txt = "Palavra para testar: "+ self.completeWord+ "\n Lendo " + symbol
+        txt = "Palavra para testar: "+ self.completeWord+ "\n Lendo:  " + symbol
         self.missingToRead.remove(symbol)
         self.alreadyRead.append(symbol)
         txt+= " Falta: "+ ''.join(self.missingToRead)
@@ -132,14 +132,15 @@ class Automato:
                     config = pydot.Edge(n, self.transitions[n][insertion],  color='black', label=" "+insertion, arrowhead='vee')
                 graph.add_edge(config)
             graph.add_node(my_node)
-            
+            tempfile = "./temp/"+str(color)+str(''.join(self.alreadyRead))+".jpg"
+
         graph.write_jpg(".\\temp\\"+str(''.join(self.alreadyRead))+".jpg")
         self.count+=1
 
     def toCreateGif(self):
         try:
-            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 400x400 imagem.gif")
-            os.startfile("imagem.gif")
+            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 500x500 img.gif")
+            os.startfile("img.gif")
             pathAtual = dir_path+"\\temp\\"
             dir = os.listdir(pathAtual)
             for file in dir:
