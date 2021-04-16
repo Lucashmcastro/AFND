@@ -95,11 +95,11 @@ class Automato:
         
             if(state_now in self.statesLast):
                  print("A string foi aceita.")
-                 os.system("copy .\\img\\accepted.png .\\temp")
+                 os.system("copy .\\img\\accepted.jpg .\\temp")
                  return True
             else:
                  print("A string foi negada.")
-                 os.system("copy .\\img\\rejeitada.jpg .\\temp")
+                 os.system("copy .\\img\\rejected.jpg .\\temp")
                  return False
         else:
             print(" Automato não possui estado inicial!!")
@@ -138,8 +138,8 @@ class Automato:
 
     def toCreateGif(self):
         try:
-            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 400x400 img.gif")
-            os.startfile("img.gif")
+            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 400x400 imagem.gif")
+            os.startfile("imagem.gif")
             pathAtual = dir_path+"\\temp\\"
             dir = os.listdir(pathAtual)
             for file in dir:
