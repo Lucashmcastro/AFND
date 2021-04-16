@@ -286,7 +286,7 @@ class Automato:
         txt = "Palavra para testar: "+ self.completeWord + "\n Lendo: " + symbol
 
         self.alreadyRead.append(symbol)
-        graph = pydot.Dot('my_graph', graph_type='digraph', bgcolor='white', label=str(txt))
+        graph = pydot.Dot('my_graph', graph_type='digraph', bgcolor='gray', label=str(txt))
 
         for n in self.states:
             if n in self.stateFirst:
