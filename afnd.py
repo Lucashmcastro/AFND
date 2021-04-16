@@ -64,7 +64,6 @@ class Automato:
             if i in self.states:
                 if i not in self.statesLast:
                     self.statesLast.append(i)
-        #print(self.statesLast)
     
     def check_transitions(self, transitions):
         states_transitions = []
@@ -261,19 +260,19 @@ class Automato:
                     return True
                 else:
                     print("A string foi negada.")
-                    os.system("copy .\\img\\rejected.png .\\temp")
+                    os.system("copy .\\img\\rejected.jpg .\\temp")
                     self.end()
                     return False
         else:
             print("A string foi negada.")
-            os.system("copy .\\img\\rejected.png .\\temp")
+            os.system("copy .\\img\\rejected.jpg .\\temp")
             self.end()
             return False
 
     def check_automato(self, state):
         if(state in self.statesLast):
             print("A string foi aceita")
-            os.system("copy .\\img\\accepted.png .\\temp")
+            os.system("copy .\\img\\accepted.jpg .\\temp")
             return True
 
     def end(self):
@@ -286,7 +285,6 @@ class Automato:
         if(symbol=="lambda"):
             symbol = u'\u03BB'
         txt = "Palavra para testar: "+ self.completeWord+ "\n Lendo " + symbol
-        #self.missingToRead.remove(symbol)
         self.alreadyRead.append(symbol)
         graph = pydot.Dot('my_graph', graph_type='digraph', bgcolor='white', label=str(txt))
 
@@ -300,7 +298,6 @@ class Automato:
             for insertion in self.transitions[n]:
                 if insertion =="episilon":
                     insertion = u'\u03BB'
-                #print("n: ", n, " stateCurrent: ",stateCurrent, " insertion: ",insertion," symbol: ",symbol)
                 if n == stateCurrent.name and insertion == symbol:
                     if n in self.stateFirst:
                         my_node = pydot.Node(n, label=n, shape="invtriangle",color=color)
@@ -318,23 +315,20 @@ class Automato:
                         
                         config = pydot.Edge(n, x,  color='black', label=" "+insertion, arrowhead='vee')
                         graph.add_edge(config)
-                #print(self.transitions[n][insertion])
                 
             graph.add_node(my_node)
             tempfile = "./temp/"+str(color)+str(''.join(self.alreadyRead))+".jpg"
         graph.write(tempfile)
-       # os.startfile(str(stateCurrent)+" lendo "+str(symbol)+".png")
         self.count+=1
 
     def toCreateGif(self):
         try:
             print(dir_path)
-            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 400x400 img.gif")
-            os.startfile("img.gif")
-            #Parte para apagar os arquivos da pasta temporaria
+            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 400x400 imagem.gif")
+            os.startfile("imagem.gif")
             pathAtual = dir_path+"\\temp\\"
             dir = os.listdir(pathAtual)
             for file in dir:
-                os.remove(pathAtual+"\\"+file)   #deleta o file da pasta temp
+                os.remove(pathAtual+"\\"+file)   
         except:
                 print("Inválido, ocorreu um erro na criação do Gif.")
