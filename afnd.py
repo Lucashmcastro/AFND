@@ -118,7 +118,7 @@ class Automato:
             
         else:
             
-            self.toCreateFork(state,symbol,"green")
+            self.toCreateFork(state,symbol,"red")
             aux1, aux2 = self.execution_transitions(symbol, state)
             if((aux1 and aux2) != None):
                 if((aux_first and aux_end) == None):
@@ -280,33 +280,40 @@ class Automato:
         self.last_state = None
         self.amount_states = 0
 
-    
     def toCreateFork(self,stateCurrent,symbol,color):
         if(symbol=="lambda"):
             symbol = u'\u03BB'
-        txt = "Palavra para testar: "+ self.completeWord+ "\n Lendo " + symbol
+        txt = "Palavra para testar: "+ self.completeWord + "\n Lendo " + symbol
+
         self.alreadyRead.append(symbol)
         graph = pydot.Dot('my_graph', graph_type='digraph', bgcolor='white', label=str(txt))
 
         for n in self.states:
             if n in self.stateFirst:
                 my_node = pydot.Node(n, label=n, shape="invtriangle")
+              
             elif n in self.statesLast:
                 my_node = pydot.Node(n, label=n, shape="doublecircle")
+            
             else:
                 my_node = pydot.Node(n, label=n, shape="circle")
+             
             for insertion in self.transitions[n]:
                 if insertion =="episilon":
                     insertion = u'\u03BB'
+
                 if n == stateCurrent.name and insertion == symbol:
                     if n in self.stateFirst:
                         my_node = pydot.Node(n, label=n, shape="invtriangle",color=color)
+                     
                     elif n in self.statesLast:
                         my_node = pydot.Node(n, label=n, shape="doublecircle", color=color)
+                    
                     else:
                         my_node = pydot.Node(n, label=n, shape="circle", color=color)
+                       
                     for x in self.transitions[n][insertion]:
-                        config = pydot.Edge(n,x,  color=color, label=" "+insertion, arrowhead='vee')
+                        config = pydot.Edge(n, x,  color=color, label=" "+insertion, arrowhead='vee')
                         graph.add_edge(config)
                  
                 else:
@@ -318,14 +325,16 @@ class Automato:
                 
             graph.add_node(my_node)
             tempfile = "./temp/"+str(color)+str(''.join(self.alreadyRead))+".jpg"
-        graph.write(tempfile)
+
+        graph.write_jpg(".\\temp\\"+str(''.join(self.alreadyRead))+".jpg")
         self.count+=1
 
     def toCreateGif(self):
         try:
             print(dir_path)
-            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 400x400 imagem.gif")
-            os.startfile("imagem.gif")
+            os.system("magick convert -delay 120 -loop 0 .\\temp\\*.jpg -resize 500x500 img.gif")
+            os.startfile("img.gif")
+        
             pathAtual = dir_path+"\\temp\\"
             dir = os.listdir(pathAtual)
             for file in dir:
